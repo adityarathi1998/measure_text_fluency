@@ -18,7 +18,17 @@ def rouge(candidate, reference):
         - matrcs: specific matrics or all
 """
 def sentence_evaluation_helper(candidate, reference, matrics):
-    pass
+    scores = []
+    if matrics == all or matrics == "bleu":
+        bleu_score = bleu(candidate, reference)
+        scores.append(bleu_score)
+    if matrics == all or matrics == "rouge":
+        rouge_score = rouge(candidate, reference)
+        scores.append(rouge_score)
+    if matrics == all or matrics == "meteor":
+        meteor_score = meteor(candidate, reference)
+        scores.append(meteor_score)
+    return scores
 
 
 """
