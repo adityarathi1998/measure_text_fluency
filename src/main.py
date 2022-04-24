@@ -41,7 +41,47 @@ def sentence_evaluation_helper(candidate, reference, matrics):
         - File with the metrics scores.
 """
 def file_evaluation_helper(candidate_file_path, reference_file_path,matrics):
-    pass
+    avg_blue = 0
+    avg_rouge = 0
+    avg_meteor = 0
+    avg_score = 0
+    count = 0
+    temp_count = 0
+    ouput_fp =  open("result_160.txt", "w+")
+    if matrics == "all":
+        ouput_fp.write("{:<15} {:<15} {:<15}\n".format(matrics_order[0] + " score", matrics_order[1] + " score",matrics_order[2] + " score"))
+    else:
+        ouput_fp.write("{:<15}\n".format(matrics + " score"))
+
+
+    with open(candidate_file_path,"r") as candidates_fp, open(reference_file_path,"r") as references_fp:
+        candidates = candidates_fp.readlines()
+        references = references_fp.readlines()
+        for candidate, reference in zip(candidates, references):
+            temp_count +=1
+            if (len(reference) > 160):
+                ouput_fp.write("Too long sentence. Index : {}\n".format(temp_count))
+                continue
+            count +=1
+            scores = sentence_evaluation_helper(candidate, reference, matrics)
+            
+            if matrics == "all":
+                ouput_fp.write("{:<15} {:<15} {:<15}\n".format(scores[0],scores[1],scores[2]))
+                avg_blue += scores[0]
+                avg_rouge +=scores[1]
+                avg_meteor +=scores[2]
+            else:
+                ouput_fp.write("{:<15}\n".format(scores[0]))
+                avg_score +=scores[0]
+
+
+    if matrics == "all":
+        ouput_fp.write("Average {} score : {}\n".format(matrics_order[0], avg_blue/count))
+        ouput_fp.write("Average {} score : {}\n".format(matrics_order[1], avg_rouge/count))
+        ouput_fp.write("Average {} score : {}\n".format(matrics_order[2], avg_meteor/count))
+    else:
+        ouput_fp.write("Average {} score : {}\n".format(matrics, avg_score/count))
+
             
 """
     driver code.
