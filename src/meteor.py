@@ -35,9 +35,31 @@ def calculate_meteor_score(f_score, penalty_val):
     return meteor_score
 
 
+"""
+    Finds the unigram precision and recall
+    Input:
+        - candidate_unigrams
+        - reference_unigrams
+    Output:
+        - Precision
+        - Recall
+"""
 def calculate_unigram_precision_recall(candidate_unigrams, reference_unigrams):
-    pass
+    reference_set = set(reference_unigrams)
+    candidate_set = set(candidate_unigrams)
 
+    match = len(candidate_set.intersection(reference_set))
+    # candidate unigram count
+    wt = len(candidate_unigrams)
+    # reference unigram count
+    wr = len(reference_unigrams)
+
+    # Find precision and recall
+    recall_score = match/wr
+    precision_score = match/wt
+
+    return precision_score, recall_score
+    
 
 """
     Function to convert a sentence into its unigrams.
