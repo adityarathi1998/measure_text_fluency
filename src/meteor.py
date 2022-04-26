@@ -1,6 +1,8 @@
 import collections
 import itertools
 from meteor_helper import Point, Line
+from collections import defaultdict
+from itertools import product, combinations
 
 """
     Calculate the harmonic mean.
@@ -20,9 +22,37 @@ def calculate_harmonic_mean(P, R):
 def find_intersections(lines):
     pass
 
+"""
+    Function to find the alignments.
+    Input:
+        - candidate_unigrams
+        - reference_unigrams
+    Output:
+        - alignments
+"""
+def calculate_alignments(candidate_unigrams, reference_unigrams):
+    reference_len = len(reference_unigrams)
+    candidate_len = len(candidate_unigrams)
 
-def calculate_allignments():
-    pass
+    mapping = defaultdict(list)
+
+    for r,c in product(range(reference_len), range(candidate_len)):
+        if candidate_unigrams[c] == reference_unigrams[r]:
+            mapping[r].append(c)
+
+    keys = tuple(mapping.keys())
+    values = tuple(mapping.values())
+
+    alignments = []
+
+    for v in product(*values):
+        per_alignment = []
+        for item in list(dict(zip(keys, v)).items()):
+            line = Line(Point(item[0],0), Point(item[1],1))
+            per_alignment.append(line)
+        alignments.append(per_alignment)
+
+    return alignments
 
 
 def calculate_chunks(candidate_unigrams, reference_unigrams):
