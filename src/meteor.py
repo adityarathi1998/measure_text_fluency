@@ -1,6 +1,6 @@
 import collections
 import itertools
-
+from meteor_helper import Point, Line
 
 """
     Calculate the harmonic mean.
@@ -17,9 +17,31 @@ def calculate_harmonic_mean(P, R):
     hm = hm/float(R + 9*P)
     return hm
 
-
-def calculate_penalty(candidate_unigrams, reference_unigrams):
+def find_intersections(lines):
     pass
+
+
+def calculate_allignments():
+    pass
+
+
+def calculate_chunks(candidate_unigrams, reference_unigrams):
+    pass
+    
+
+"""
+    Function to calculate the chunk penalty
+    Input:
+        - candidate_unigrams
+        - reference_unigrams
+    Output:
+        - chunk penalty
+"""
+def calculate_chunk_penalty(candidate_unigrams, reference_unigrams):
+    no_of_chunks = calculate_chunks(candidate_unigrams, reference_unigrams)
+    candidate_unigrams = len(set(candidate_unigrams))
+    chunk_penalty = 0.5*(no_of_chunks/candidate_unigrams)**3
+    return chunk_penalty
 
 
 """
@@ -91,7 +113,7 @@ def meteor(candidate, reference):
     # Calculate precision adn recall
     Precision, Recall = calculate_unigram_precision_recall(candidate_unigrams, reference_unigrams)
 
-    penalty = calculate_penalty(candidate_unigrams, reference_unigrams)
+    penalty = calculate_chunk_penalty(candidate_unigrams, reference_unigrams)
     f_score =  calculate_harmonic_mean(Precision, Recall)
     penalty_val = penalty[0]
     meteor_score = calculate_meteor_score(f_score, penalty_val)
