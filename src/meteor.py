@@ -1,6 +1,7 @@
 import collections
 import itertools
-from meteor_helper import Point, Line
+from math import comb
+from meteor_helper import Point, Line, count_intersections
 from collections import defaultdict
 from itertools import product, combinations
 
@@ -19,8 +20,6 @@ def calculate_harmonic_mean(P, R):
     hm = hm/float(R + 9*P)
     return hm
 
-def find_intersections(lines):
-    pass
 
 """
     Function to find the alignments.
@@ -54,9 +53,47 @@ def calculate_alignments(candidate_unigrams, reference_unigrams):
 
     return alignments
 
-
+"""
+    Function to calculate the # of chunks among the reference and candidate.
+    Input:
+        - candidate_unigrams
+        - reference_unigrams
+    Output:
+        - chunks
+        - mappings
+"""
 def calculate_chunks(candidate_unigrams, reference_unigrams):
     pass
+
+    min_alignments = None
+    alignments = calculate_alignments(candidate_unigrams, reference_unigrams)
+    len_alignment_map = map(len, alignments)
+    min_len = min(len_alignment_map)
+    min_alignments = []
+    for alignment in alignments:
+        if min_len ==len(alignment):
+            min_alignments.append(alignment)
+    
+    len_min_alignments = len(min_alignments)
+
+    if len_min_alignments ==1:
+        min_alignment = min_alignments[0]
+    elif len_min_alignments ==0:
+        return 0,0
+    else:
+        min_alignment = min(min_alignments, key=count_intersections)
+    
+    
+    iterator = iter(min_alignment)
+    next(iterator)
+
+    chunks = 1  
+    for prev, curr in zip(min_alignment, iterator):
+        if prev.point2.x + 1 != curr.point2.x:
+            chunks +=1
+    
+    mappings = len(min_alignment)
+    return chunks, mappings
     
 
 """
