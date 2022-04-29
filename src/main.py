@@ -1,3 +1,5 @@
+import os
+import sys
 import argparse
 from meteor import meteor
 
@@ -39,14 +41,14 @@ def sentence_evaluation_helper(candidate, reference, matrics):
     Output:
         - File with the metrics scores.
 """
-def file_evaluation_helper(candidate_file_path, reference_file_path,matrics):
+def file_evaluation_helper(candidate_file_path, reference_file_path, output_file_path,matrics):
     avg_blue = 0
     avg_rouge = 0
     avg_meteor = 0
     avg_score = 0
     count = 0
     temp_count = 0
-    ouput_fp =  open("../../output/result_160.txt", "w+")
+    ouput_fp =  open(output_file_path, "w+")
     if matrics == "all":
         ouput_fp.write("{:<15} {:<15} {:<15}\n".format(matrics_order[0] + " score", matrics_order[1] + " score",matrics_order[2] + " score"))
     else:
@@ -91,6 +93,7 @@ if __name__ == "__main__":
     parser.add_argument("-em","--evaluation_matrix", help="specifies the evaluation matrix or all.", choices=["bleu", "rouge", "meteor", "all"], default="bleu", required=True)
     parser.add_argument("-rf","--reference_file_path", help="reference file path")
     parser.add_argument("-cf","--candidate_file_path", help="candidate file path")
+    parser.add_argument("-of","--output_file_path", help="output file name")
     args = parser.parse_args()
 
     input_type = args.input_type
@@ -100,16 +103,19 @@ if __name__ == "__main__":
     else:
         reference_file_path = args.reference_file_path
         candidate_file_path = args.candidate_file_path
+        output_dir = "../output/"
+        output_file_path = output_dir + args.output_file_path
 
-        # if os.path.isfile(reference_file_path):
-        #     print(reference_file_path)
+        if not os.path.isfile(reference_file_path):
+            sys.exit("Invalid reference file path")
 
+        if not os.path.isfile(candidate_file_path):
+            sys.exit("Invalid candidate file path")
 
-        # #     fp = open(reference_file_path, "r")
-        # #     sys.exit("Invalid reference file path")
         
-        # if os.path.isfile(candidate_file_path):
-        #     sys.exit("Invalid candidate file path")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
 
     if input_type == "cmd":
         results = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
@@ -118,4 +124,4 @@ if __name__ == "__main__":
         else:
             print("{} score : {}\n".format(args.evaluation_matrix, results[0]))
     else:
-        file_evaluation_helper(candidate_file_path, reference_file_path,args.evaluation_matrix)
+        file_evaluation_helper(candidate_file_path, reference_file_path, output_file_path,args.evaluation_matrix)
