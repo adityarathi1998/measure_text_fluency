@@ -1,11 +1,10 @@
 import argparse
+from meteor import meteor
 
 global matrics_order 
 matrics_order = ["bleu", "rouge", "meteor"]
 
 def bleu(candidate, reference):
-    pass
-def meteor(candidate, reference):
     pass
 def rouge(candidate, reference):
     pass
@@ -47,7 +46,7 @@ def file_evaluation_helper(candidate_file_path, reference_file_path,matrics):
     avg_score = 0
     count = 0
     temp_count = 0
-    ouput_fp =  open("result_160.txt", "w+")
+    ouput_fp =  open("../../output/result_160.txt", "w+")
     if matrics == "all":
         ouput_fp.write("{:<15} {:<15} {:<15}\n".format(matrics_order[0] + " score", matrics_order[1] + " score",matrics_order[2] + " score"))
     else:
@@ -96,14 +95,14 @@ if __name__ == "__main__":
 
     input_type = args.input_type
     if input_type == "cmd":
-        candidate = input("Candidat sentence :")
+        candidate = input("Candidate sentence :")
         reference = input("Reference sentence :")
     else:
         reference_file_path = args.reference_file_path
         candidate_file_path = args.candidate_file_path
 
         # if os.path.isfile(reference_file_path):
-        # print(reference_file_path)
+        #     print(reference_file_path)
 
 
         # #     fp = open(reference_file_path, "r")

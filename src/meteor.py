@@ -63,8 +63,6 @@ def calculate_alignments(candidate_unigrams, reference_unigrams):
         - mappings
 """
 def calculate_chunks(candidate_unigrams, reference_unigrams):
-    pass
-
     min_alignments = None
     alignments = calculate_alignments(candidate_unigrams, reference_unigrams)
     len_alignment_map = map(len, alignments)
@@ -84,11 +82,11 @@ def calculate_chunks(candidate_unigrams, reference_unigrams):
         min_alignment = min(min_alignments, key=count_intersections)
     
     
-    iterator = iter(min_alignment)
-    next(iterator)
+    alignment_iter = iter(min_alignment)
+    next(alignment_iter)
 
     chunks = 1  
-    for prev, curr in zip(min_alignment, iterator):
+    for prev, curr in zip(min_alignment, alignment_iter):
         if prev.point2.x + 1 != curr.point2.x:
             chunks +=1
     
@@ -105,9 +103,11 @@ def calculate_chunks(candidate_unigrams, reference_unigrams):
         - chunk penalty
 """
 def calculate_chunk_penalty(candidate_unigrams, reference_unigrams):
-    no_of_chunks = calculate_chunks(candidate_unigrams, reference_unigrams)
-    candidate_unigrams = len(set(candidate_unigrams))
-    chunk_penalty = 0.5*(no_of_chunks/candidate_unigrams)**3
+    no_of_chunks, mappings = calculate_chunks(candidate_unigrams, reference_unigrams)
+    # print("No_of_chunks:",no_of_chunks)
+    candidate_unigrams_len = len(set(candidate_unigrams))
+    # print("candidate_unigrams_len:",candidate_unigrams_len)
+    chunk_penalty = 0.5*(no_of_chunks/candidate_unigrams_len)**3
     return chunk_penalty
 
 
@@ -173,8 +173,9 @@ def meteor(candidate, reference):
     score = 0.0
     candidate_unigrams = get_unigrams(candidate)
     reference_unigrams = get_unigrams(reference)
-
-    if (set(candidate_unigrams).intersection(set(reference_unigrams)) == 0):
+    # print("candidate_unigrams:", candidate_unigrams)
+    # print("reference_unigrams:", reference_unigrams)
+    if (len(set(candidate_unigrams).intersection(set(reference_unigrams))) == 0):
         return score
     
     # Calculate precision adn recall
@@ -182,7 +183,7 @@ def meteor(candidate, reference):
 
     penalty = calculate_chunk_penalty(candidate_unigrams, reference_unigrams)
     f_score =  calculate_harmonic_mean(Precision, Recall)
-    penalty_val = penalty[0]
+    penalty_val = penalty
     meteor_score = calculate_meteor_score(f_score, penalty_val)
 
     return meteor_score
