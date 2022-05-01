@@ -4,6 +4,7 @@ import argparse
 from meteor import meteor
 from blue import bleu
 from rouge import rouge_n as rouge
+import time
 
 global metrics_order 
 metrics_order = ["bleu", "rouge", "meteor"]
@@ -18,19 +19,33 @@ metrics_order = ["bleu", "rouge", "meteor"]
 """
 def sentence_evaluation_helper(candidate, reference, metrics):
     scores = []
+    times = []
+
     if metrics == "all" or metrics == "bleu":
+        bleu_st = time.time()
         bleu_score_scratch, bleu_score_nltk = bleu(candidate, reference)
+        bleu_ed = time.time()
         if bleu_score_scratch == 0:
             scores.append(bleu_score_nltk)
         else:
             scores.append(bleu_score_scratch)
+        times.append(bleu_ed - bleu_st)
+    
     if metrics == "all" or metrics == "rouge":
+        rouge_st = time.time()
         rouge_score = rouge(candidate, reference)
+        rouge_ed = time.time()
         scores.append(rouge_score)
+        times.append(rouge_ed - rouge_st)
+
     if metrics == "all" or metrics == "meteor":
+        meteor_st = time.time()
         meteor_score = meteor(candidate, reference)
+        meteor_ed = time.time()
+        times.append(meteor_ed - meteor_st)
         scores.append(meteor_score)
-    return scores
+
+    return scores, times
 
 
 """
@@ -49,6 +64,10 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
     avg_score = 0
     count = 0
     temp_count = 0
+    bleu_time = 0 
+    rouge_time = 0 
+    meteor_time = 0
+    avg_time = 0
     ouput_fp =  open(output_file_path, "w+")
     if metrics == "all":
         ouput_fp.write("{:<15}\t{:<15}\t{:<15}\n".format(metrics_order[0] + " score", metrics_order[1] + " score",metrics_order[2] + " score"))
@@ -64,24 +83,37 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
             if (len(reference) > 160):
                 continue
             count +=1
-            scores = sentence_evaluation_helper(candidate, reference, metrics)
+            scores, time_array = sentence_evaluation_helper(candidate, reference, metrics)
             
             if metrics == "all":
                 ouput_fp.write("{:<15}\t{:<15}\t{:<15}\n".format(scores[0],scores[1],scores[2]))
                 avg_blue += scores[0]
                 avg_rouge +=scores[1]
                 avg_meteor +=scores[2]
+
+                bleu_time +=time_array[0]
+                rouge_time += time_array[1]
+                meteor_time += time_array[2]
+                
             else:
                 ouput_fp.write("{:<15}\n".format(scores[0]))
                 avg_score +=scores[0]
+                avg_time +=time_array[0]
+                
 
 
     if metrics == "all":
         ouput_fp.write("Average {} score : {}\n".format(metrics_order[0], avg_blue/count))
         ouput_fp.write("Average {} score : {}\n".format(metrics_order[1], avg_rouge/count))
         ouput_fp.write("Average {} score : {}\n".format(metrics_order[2], avg_meteor/count))
+
+        ouput_fp.write("Total {} time : {}\n".format(metrics_order[0], bleu_time))
+        ouput_fp.write("Total {} time : {}\n".format(metrics_order[1], rouge_time))
+        ouput_fp.write("Total {} time : {}\n".format(metrics_order[2], meteor_time))
+
     else:
         ouput_fp.write("Average {} score : {}\n".format(metrics, avg_score/count))
+        ouput_fp.write("Total {} time : {}\n".format(metrics, avg_time))
 
             
 """
@@ -118,7 +150,7 @@ if __name__ == "__main__":
         
 
     if input_type == "cmd":
-        results = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
+        results, _ = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
         if args.evaluation_matrix =="all":
             print("{} score : {}\n {} score : {}\n {} score : {}\n ".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
         else:
