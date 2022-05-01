@@ -90,7 +90,7 @@ def rouge_n(reference_sentences, evaluated_sentences, n=2):
   f1_score = 2.0 * ( num1 / den1)
 
   #just returning recall count in rouge, useful for our purpose
-  return f1_score,recall
+  return recall
 
 
 ###############################
