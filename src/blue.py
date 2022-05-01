@@ -36,10 +36,12 @@ def brevity_penalty(ca, refs):
 
 def bleu_helper(ca, refs, weights, n_start, n_end):
     assert n_end >= n_start > 0
-    bp = brevity_penalty(ca, refs)
-    p_n = [modified_precision(ca, refs, n) for n in range(n_start, n_end + 1)]
     res = 0
+
     try:
+        bp = brevity_penalty(ca, refs)
+        p_n = [modified_precision(ca, refs, n) for n in range(n_start, n_end + 1)]
+    
         res = bp * np.exp(sum([w * np.log(p) for w, p in zip(weights, p_n)]))
         return res
     except:

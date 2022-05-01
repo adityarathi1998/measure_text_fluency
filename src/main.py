@@ -20,7 +20,10 @@ def sentence_evaluation_helper(candidate, reference, metrics):
     scores = []
     if metrics == all or metrics == "bleu":
         bleu_score_scratch, bleu_score_nltk = bleu(candidate, reference)
-        scores.append(bleu_score_scratch)
+        if bleu_score_scratch == 0:
+            scores.append(bleu_score_nltk)
+        else:
+            scores.append(bleu_score_scratch)
     if metrics == all or metrics == "rouge":
         rouge_score = rouge(candidate, reference)
         scores.append(rouge_score)
@@ -48,7 +51,7 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
     temp_count = 0
     ouput_fp =  open(output_file_path, "w+")
     if metrics == "all":
-        ouput_fp.write("{:<15} {:<15} {:<15}\n".format(metrics_order[0] + " score", metrics_order[1] + " score",metrics_order[2] + " score"))
+        ouput_fp.write("{:<15}\t{:<15}\t{:<15}\n".format(metrics_order[0] + " score", metrics_order[1] + " score",metrics_order[2] + " score"))
     else:
         ouput_fp.write("{:<15}\n".format(metrics + " score"))
 
@@ -65,7 +68,7 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
             scores = sentence_evaluation_helper(candidate, reference, metrics)
             
             if metrics == "all":
-                ouput_fp.write("{:<15} {:<15} {:<15}\n".format(scores[0],scores[1],scores[2]))
+                ouput_fp.write("{:<15}\t{:<15}\t{:<15}\n".format(scores[0],scores[1],scores[2]))
                 avg_blue += scores[0]
                 avg_rouge +=scores[1]
                 avg_meteor +=scores[2]
