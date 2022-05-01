@@ -2,12 +2,11 @@ import os
 import sys
 import argparse
 from meteor import meteor
+from blue import bleu
 
 global matrics_order 
 matrics_order = ["bleu", "rouge", "meteor"]
 
-def bleu(candidate, reference):
-    pass
 def rouge(candidate, reference):
     pass
 
@@ -21,8 +20,8 @@ def rouge(candidate, reference):
 def sentence_evaluation_helper(candidate, reference, matrics):
     scores = []
     if matrics == all or matrics == "bleu":
-        bleu_score = bleu(candidate, reference)
-        scores.append(bleu_score)
+        bleu_score_scratch, bleu_score_nltk = bleu(candidate, reference)
+        scores.append(bleu_score_scratch)
     if matrics == all or matrics == "rouge":
         rouge_score = rouge(candidate, reference)
         scores.append(rouge_score)
