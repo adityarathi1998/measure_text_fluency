@@ -152,7 +152,7 @@ if __name__ == "__main__":
     if input_type == "cmd":
         results, _ = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
         if args.evaluation_matrix =="all":
-            print("{} score : {}\n {} score : {}\n {} score : {}\n ".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
+            print("{} score : {}\n{} score : {}\n{} score : {}\n".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
         else:
             print("{} score : {}\n".format(args.evaluation_matrix, results[0]))
     else:
