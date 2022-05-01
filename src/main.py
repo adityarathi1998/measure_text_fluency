@@ -18,16 +18,16 @@ metrics_order = ["bleu", "rouge", "meteor"]
 """
 def sentence_evaluation_helper(candidate, reference, metrics):
     scores = []
-    if metrics == all or metrics == "bleu":
+    if metrics == "all" or metrics == "bleu":
         bleu_score_scratch, bleu_score_nltk = bleu(candidate, reference)
         if bleu_score_scratch == 0:
             scores.append(bleu_score_nltk)
         else:
             scores.append(bleu_score_scratch)
-    if metrics == all or metrics == "rouge":
+    if metrics == "all" or metrics == "rouge":
         rouge_score = rouge(candidate, reference)
         scores.append(rouge_score)
-    if metrics == all or metrics == "meteor":
+    if metrics == "all" or metrics == "meteor":
         meteor_score = meteor(candidate, reference)
         scores.append(meteor_score)
     return scores
@@ -62,7 +62,6 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
         for candidate, reference in zip(candidates, references):
             temp_count +=1
             if (len(reference) > 160):
-                ouput_fp.write("Too long sentence. Index : {}\n".format(temp_count))
                 continue
             count +=1
             scores = sentence_evaluation_helper(candidate, reference, metrics)
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     if input_type == "cmd":
         results = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
         if args.evaluation_matrix =="all":
-            print("{} score : {}, {} score : {}, {} score : {}\n ".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
+            print("{} score : {}\n {} score : {}\n {} score : {}\n ".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
         else:
             print("{} score : {}\n".format(args.evaluation_matrix, results[0]))
     else:
