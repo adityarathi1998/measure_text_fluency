@@ -3,29 +3,28 @@ import sys
 import argparse
 from meteor import meteor
 from blue import bleu
+from rouge import rouge_n as rouge
 
-global matrics_order 
-matrics_order = ["bleu", "rouge", "meteor"]
+global metrics_order 
+metrics_order = ["bleu", "rouge", "meteor"]
 
-def rouge(candidate, reference):
-    pass
 
 """
-    Function to calculate the scores for a (cadidate, reference) pair for the given matrics.
+    Function to calculate the scores for a (cadidate, reference) pair for the given metrics.
     Input:
         - candidate: sentence
         - reference: sentence
-        - matrcs: specific matrics or all
+        - matrcs: specific metrics or all
 """
-def sentence_evaluation_helper(candidate, reference, matrics):
+def sentence_evaluation_helper(candidate, reference, metrics):
     scores = []
-    if matrics == all or matrics == "bleu":
+    if metrics == all or metrics == "bleu":
         bleu_score_scratch, bleu_score_nltk = bleu(candidate, reference)
         scores.append(bleu_score_scratch)
-    if matrics == all or matrics == "rouge":
+    if metrics == all or metrics == "rouge":
         rouge_score = rouge(candidate, reference)
         scores.append(rouge_score)
-    if matrics == all or matrics == "meteor":
+    if metrics == all or metrics == "meteor":
         meteor_score = meteor(candidate, reference)
         scores.append(meteor_score)
     return scores
@@ -36,11 +35,11 @@ def sentence_evaluation_helper(candidate, reference, matrics):
     Input:
         - candidate_file_path
         - reference_file_path
-        - matrics
+        - metrics
     Output:
         - File with the metrics scores.
 """
-def file_evaluation_helper(candidate_file_path, reference_file_path, output_file_path,matrics):
+def file_evaluation_helper(candidate_file_path, reference_file_path, output_file_path,metrics):
     avg_blue = 0
     avg_rouge = 0
     avg_meteor = 0
@@ -48,10 +47,10 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
     count = 0
     temp_count = 0
     ouput_fp =  open(output_file_path, "w+")
-    if matrics == "all":
-        ouput_fp.write("{:<15} {:<15} {:<15}\n".format(matrics_order[0] + " score", matrics_order[1] + " score",matrics_order[2] + " score"))
+    if metrics == "all":
+        ouput_fp.write("{:<15} {:<15} {:<15}\n".format(metrics_order[0] + " score", metrics_order[1] + " score",metrics_order[2] + " score"))
     else:
-        ouput_fp.write("{:<15}\n".format(matrics + " score"))
+        ouput_fp.write("{:<15}\n".format(metrics + " score"))
 
 
     with open(candidate_file_path,"r") as candidates_fp, open(reference_file_path,"r") as references_fp:
@@ -63,9 +62,9 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
                 ouput_fp.write("Too long sentence. Index : {}\n".format(temp_count))
                 continue
             count +=1
-            scores = sentence_evaluation_helper(candidate, reference, matrics)
+            scores = sentence_evaluation_helper(candidate, reference, metrics)
             
-            if matrics == "all":
+            if metrics == "all":
                 ouput_fp.write("{:<15} {:<15} {:<15}\n".format(scores[0],scores[1],scores[2]))
                 avg_blue += scores[0]
                 avg_rouge +=scores[1]
@@ -75,12 +74,12 @@ def file_evaluation_helper(candidate_file_path, reference_file_path, output_file
                 avg_score +=scores[0]
 
 
-    if matrics == "all":
-        ouput_fp.write("Average {} score : {}\n".format(matrics_order[0], avg_blue/count))
-        ouput_fp.write("Average {} score : {}\n".format(matrics_order[1], avg_rouge/count))
-        ouput_fp.write("Average {} score : {}\n".format(matrics_order[2], avg_meteor/count))
+    if metrics == "all":
+        ouput_fp.write("Average {} score : {}\n".format(metrics_order[0], avg_blue/count))
+        ouput_fp.write("Average {} score : {}\n".format(metrics_order[1], avg_rouge/count))
+        ouput_fp.write("Average {} score : {}\n".format(metrics_order[2], avg_meteor/count))
     else:
-        ouput_fp.write("Average {} score : {}\n".format(matrics, avg_score/count))
+        ouput_fp.write("Average {} score : {}\n".format(metrics, avg_score/count))
 
             
 """
@@ -119,7 +118,7 @@ if __name__ == "__main__":
     if input_type == "cmd":
         results = sentence_evaluation_helper(candidate, reference, args.evaluation_matrix)
         if args.evaluation_matrix =="all":
-            print("{} score : {}, {} score : {}, {} score : {}\n ".format(matrics_order[0], results[0], matrics_order[1], results[1], matrics_order[2], results[2]))    
+            print("{} score : {}, {} score : {}, {} score : {}\n ".format(metrics_order[0], results[0], metrics_order[1], results[1], metrics_order[2], results[2]))    
         else:
             print("{} score : {}\n".format(args.evaluation_matrix, results[0]))
     else:
